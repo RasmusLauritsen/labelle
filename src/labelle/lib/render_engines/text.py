@@ -39,17 +39,17 @@ class TextRenderEngine(RenderEngine):
         font_size_px = round(line_height * self.font_size_ratio)
 
         font_offset_px = int((line_height - font_size_px) / 2)
-        if self.frame_width_px:
-            frame_width_px = self.frame_width_px or min(
-                self.frame_width_px, font_offset_px, 3
-            )
-        else:
-            frame_width_px = self.frame_width_px
 
         font = ImageFont.truetype(str(self.font_file_name), font_size_px)
         boxes = (font.getbbox(line) for line in self.text_lines)
         line_widths = (right - left for left, _top, right, _bottom in boxes)
         label_width_px = max(line_widths) + (font_offset_px * 2)
+        # Keep both inclusive inner rectangle bounds ordered. If even a one-pixel
+        # border cannot fit inside the existing four-pixel vertical inset, omit it.
+        frame_width_px = max(
+            0,
+            min(self.frame_width_px, (label_width_px - 1) // 2, (height_px - 8) // 2),
+        )
         bitmap = Image.new("1", (label_width_px, height_px))
         with draw_image(bitmap) as draw:
             # draw frame into empty image
