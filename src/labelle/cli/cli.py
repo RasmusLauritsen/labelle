@@ -478,6 +478,7 @@ def default(
                 barcode_type=barcode_type,
                 font_file_name=font_path,
                 frame_width_px=frame_width_px,
+                font_size_ratio=int(font_scale) / 100.0,
             )
         )
 
